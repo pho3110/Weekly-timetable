@@ -16,7 +16,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { margin: 0; }
 button, input, select { font: inherit; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; }
-button { cursor: pointer; touch-action: manipulation; }
+button { cursor: pointer; touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 button, a { transition: background-color .22s, color .22s, border-color .22s, box-shadow .22s, transform .18s; }
 button:focus-visible, a:focus-visible { outline: 3px solid #0062cc; outline-offset: 3px; }
 button:active:not(:disabled) { transform: scale(.98); }
@@ -74,6 +74,7 @@ h2 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.6px; }
 .add-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #e7efff; color: #005ac2; flex-shrink: 0; }
 .day-tabs, .mobile-schedule { display: none; }
 .icon-button { display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; border-radius: 12px; color: var(--muted); background: #eeeef2; }
+.sheet-handle { display: none; }
 dialog { width: min(460px, calc(100% - 24px)); max-width: calc(100% - 24px); margin: auto; border: 1px solid var(--line); border-radius: 24px; padding: 26px; background: #fff; color: var(--ink); max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; box-shadow: 0 24px 80px #12172824; }
 dialog::backdrop { background: #171a253d; backdrop-filter: blur(5px); }
 .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -131,7 +132,10 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .lesson-name { font-size: 16px; }
   .lesson-marker { top: 18px; bottom: 18px; }
   dialog { position: fixed; inset: auto 0 0; width: 100%; max-width: min(560px, 100%); margin: 0 auto; padding: 14px max(22px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(22px, env(safe-area-inset-left, 0px)); border: 0; border-radius: 28px 28px 0 0; background: #fafafd; }
-  dialog::before { content: ''; display: block; width: 36px; height: 5px; border-radius: 5px; background: #c7c7cf; margin: 0 auto 18px; }
+  dialog { bottom: var(--keyboard-bottom, 0px); max-height: calc(var(--sheet-available, 100dvh) - 16px - env(safe-area-inset-top, 0px)); transform: translateY(var(--sheet-offset, 0px)); }
+  dialog[data-dragging] { transition: none; animation: none; }
+  .sheet-handle { display: grid; place-items: start center; width: 100%; min-height: 44px; border: 0; padding: 4px 0 0; background: transparent; touch-action: none; }
+  .sheet-handle span { width: 36px; height: 5px; border-radius: 5px; background: #9898a3; }
   dialog[open] { animation: sheet-in .24s cubic-bezier(.2,.8,.2,1); }
   .dialog-header .icon-button { border-radius: 50%; background: #e8e8ee; }
   .form-actions .primary { flex: 1; border-radius: 14px; min-height: 50px; font-size: 16px; font-weight: 600; }
@@ -165,7 +169,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 @media (max-width: 359px) {
   .section-toolbar h2 { font-size: 18px; }
   .tools { gap: 3px; }
-  .tools button { min-width: 40px; padding: 8px; }
+  .tools button { min-width: 44px; padding: 8px; }
   .mobile-slot { padding: 12px; }
   .mobile-time strong { align-items: flex-start; flex-direction: column; gap: 0; }
   .slot-symbol { width: 29px; height: 32px; }
@@ -206,7 +210,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .afternoon-symbol { background: #2e2944; color: #d1c5ff; }
   dialog { background: #1c1c1e; border-color: #35353d; }
   dialog::backdrop { background: #0008; }
-  dialog::before { background: #63636c; }
+  .sheet-handle span { background: #91919c; }
   .dialog-header .icon-button { background: #36363c; color: #c8c9d2; }
   form input, form select { background: #2c2c30; border-color: #50505c; color: var(--ink); }
   form input:focus, form select:focus { background: #303036; outline-color: #83baff; }
@@ -238,4 +242,14 @@ form input, form select, form label, legend, .replace-note, .delete, .toast {
   form input, form select, form label, legend, .replace-note, .delete, .toast {
     transition: none;
   }
+}
+
+/* Touch screens must not retain mouse hover styling after a tap. */
+@media (hover: none) {
+  .tools .primary:hover, .primary:hover { background: var(--accent); }
+  .lesson:not(.is-current):hover { box-shadow: none; }
+  .lesson.empty:hover { background: #f7f9ff; border-color: #e7ecf8; }
+}
+@media (hover: none) and (prefers-color-scheme: dark) {
+  .lesson.empty:hover { background: #232a36; border-color: #364357; }
 }

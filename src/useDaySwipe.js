@@ -6,25 +6,25 @@ export function useDaySwipe(onSwipe) {
   const ignoreClickUntil = useRef(0);
 
   function onTouchStart(event) {
+    ignoreClickUntil.current = 0;
     const touch = event.touches[0];
-    if (event.touches.length !== 1 || touch.clientX < 24 || touch.clientX > window.innerWidth - 24) {
+    if (event.touches.length !== 1 || !touch || touch.clientX < 28 || touch.clientX > window.innerWidth - 28) {
       gesture.current = null;
       return;
     }
-    ignoreClickUntil.current = 0;
-    gesture.current = { x: touch.clientX, y: touch.clientY, started: Date.now(), direction: null };
+    gesture.current = { x: touch.clientX, y: touch.clientY, started: performance.now(), direction: null };
   }
 
   function onTouchMove(event) {
     const start = gesture.current;
     if (!start) return;
-    if (event.touches.length !== 1) { gesture.current = null; return; }
+    if (event.touches.length !== 1) { gesture.current = null; ignoreClickUntil.current = performance.now() + 500; return; }
     const dx = Math.abs(event.touches[0].clientX - start.x);
     const dy = Math.abs(event.touches[0].clientY - start.y);
     if (!start.direction && Math.max(dx, dy) > 10) {
-      start.direction = dx > dy * 1.5 ? 'horizontal' : 'vertical';
+      start.direction = dx > dy * 1.4 ? 'horizontal' : 'vertical';
     }
-    if (start.direction === 'horizontal') ignoreClickUntil.current = Date.now() + 400;
+    if (start.direction) ignoreClickUntil.current = performance.now() + 500;
   }
 
   function onTouchEnd(event) {
@@ -33,17 +33,23 @@ export function useDaySwipe(onSwipe) {
     if (!start || event.touches.length || !event.changedTouches.length) return;
     const dx = event.changedTouches[0].clientX - start.x;
     const dy = event.changedTouches[0].clientY - start.y;
-    if (start.direction !== 'vertical' && Math.abs(dx) >= 56 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - start.started < 1000) {
-      ignoreClickUntil.current = Date.now() + 400;
+    const duration = Math.max(1, performance.now() - start.started);
+    const intentionalSwipe = Math.abs(dx) >= 48 || (Math.abs(dx) >= 30 && Math.abs(dx) / duration >= 0.4);
+    if (start.direction !== 'vertical' && intentionalSwipe && Math.abs(dx) > Math.abs(dy) * 1.4 && duration < 1000) {
+      ignoreClickUntil.current = performance.now() + 500;
       onSwipe(dx < 0 ? 1 : -1);
     }
   }
 
   return {
     onTouchStart, onTouchMove, onTouchEnd,
-    onTouchCancel: () => { gesture.current = null; },
+    onTouchCancel: () => { gesture.current = null; ignoreClickUntil.current = performance.now() + 500; },
+    onKeyDownCapture: () => { ignoreClickUntil.current = 0; },
+    onPointerDownCapture: event => {
+      if (event.pointerType === 'mouse') ignoreClickUntil.current = 0;
+    },
     onClickCapture: event => {
-      if (Date.now() < ignoreClickUntil.current && event.detail !== 0) {
+      if (performance.now() < ignoreClickUntil.current) {
         event.preventDefault();
         event.stopPropagation();
       }
