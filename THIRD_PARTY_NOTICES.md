@@ -8,6 +8,7 @@
 - Local animation: `src/assets/totoro-walk.json`, extracted from the published dotLottie archive.
 
 The asset is bundled locally for offline playback. Lottie Web is distributed under the MIT license; see its package license.
+Unused editor metadata (`nm`, `mn`, `meta`) is removed from both Lottie files to reduce their size; animation geometry and timing are unchanged.
 
 **Cat Crying emoji/Sticker animation**, by Abdul Latif.
 

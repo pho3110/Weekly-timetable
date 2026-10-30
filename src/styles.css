@@ -229,7 +229,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 .time-cell, .period, .time-cell > span, .grid-cell, .lesson,
 .lesson-name, .room, .add-icon, .day-tabs, .day-dot, .mobile-slot,
 .slot-symbol, .mobile-time strong span, .time-badge,
-dialog, dialog::before, dialog::backdrop, .form-description,
+dialog, dialog::backdrop, .form-description,
 form input, form select, form label, legend, .replace-note, .delete, .toast {
   transition: background-color .22s ease, color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .18s ease;
 }
@@ -238,7 +238,7 @@ form input, form select, form label, legend, .replace-note, .delete, .toast {
   .time-cell, .period, .time-cell > span, .grid-cell, .lesson,
   .lesson-name, .room, .add-icon, .day-tabs, .day-dot, .mobile-slot,
   .slot-symbol, .mobile-time strong span, .time-badge,
-  dialog, dialog::before, dialog::backdrop, .form-description,
+  dialog, dialog::backdrop, .form-description,
   form input, form select, form label, legend, .replace-note, .delete, .toast {
     transition: none;
   }
