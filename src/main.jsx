@@ -53,13 +53,15 @@ function App() {
   }, [editing]);
   useEffect(() => {
     if (!editing) return;
-    const scrollY = window.scrollY;
-    const bodyStyle = document.body.style;
-    const previous = { overflow: document.documentElement.style.overflow, position: bodyStyle.position, top: bodyStyle.top, width: bodyStyle.width };
-    document.documentElement.style.overflow = 'hidden';
-    bodyStyle.position = 'fixed';
-    bodyStyle.top = `-${scrollY}px`;
-    bodyStyle.width = '100%';
+    // Avoid body { position: fixed } because it causes iOS PWA (WKWebView) to
+    // refuse opening the virtual keyboard when tapping an input inside the sheet.
+    // Instead, lock scrolling via overflow: hidden on both root elements which
+    // is sufficient to prevent background scroll without breaking keyboard focus.
+    const htmlEl = document.documentElement;
+    const bodyEl = document.body;
+    const prev = { htmlOverflow: htmlEl.style.overflow, bodyOverflow: bodyEl.style.overflow };
+    htmlEl.style.overflow = 'hidden';
+    bodyEl.style.overflow = 'hidden';
     const viewport = window.visualViewport;
     function fitKeyboard() {
       if (!viewport || !dialog.current) return;
@@ -72,11 +74,8 @@ function App() {
     return () => {
       viewport?.removeEventListener('resize', fitKeyboard);
       viewport?.removeEventListener('scroll', fitKeyboard);
-      document.documentElement.style.overflow = previous.overflow;
-      bodyStyle.position = previous.position;
-      bodyStyle.top = previous.top;
-      bodyStyle.width = previous.width;
-      window.scrollTo(0, scrollY);
+      htmlEl.style.overflow = prev.htmlOverflow;
+      bodyEl.style.overflow = prev.bodyOverflow;
       dialog.current?.style.removeProperty('--keyboard-bottom');
       dialog.current?.style.removeProperty('--sheet-available');
     };
