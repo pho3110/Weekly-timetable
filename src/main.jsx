@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { registerSW } from 'virtual:pwa-register';
 import { CalendarDays, Sun, Sunset, Plus, MapPin, X, Check } from 'lucide-react';
 import { COLORS, DAYS, SLOTS, STORAGE_KEY, loadSchedule } from './storage';
 import './styles.css';
@@ -9,6 +8,7 @@ import { dismissStartup } from './startup';
 import { useCurrentLesson } from './useCurrentLesson';
 import { LessonMascot } from './LessonMascot';
 import { useSheetGesture } from './useSheetGesture';
+import { usePwaUpdates } from './usePwaUpdates';
 
 function outsideDialog(event) {
   const rect = event.currentTarget.getBoundingClientRect();
@@ -20,6 +20,7 @@ function App() {
   const [day, setDay] = useState(Math.min(4, Math.max(0, (new Date().getDay() + 6) % 7)));
   const [editing, setEditing] = useState(null);
   const [notice, setNotice] = useState('');
+  usePwaUpdates(!!editing, () => setNotice('Chưa thể chuẩn bị offline. Hãy tải lại khi có mạng.'));
   const currentLesson = useCurrentLesson();
   const dialog = useRef(null);
   const backdropPress = useRef(false);
@@ -43,9 +44,6 @@ function App() {
     motion.addEventListener('change', stopForReducedMotion);
     return () => { animation.cancel(); motion.removeEventListener('change', stopForReducedMotion); };
   }, [day]);
-  useEffect(() => {
-    registerSW({ onRegisterError: () => setNotice('Chưa thể chuẩn bị offline. Hãy tải lại khi có mạng.') });
-  }, []);
   useEffect(() => { if (editing) dialog.current?.showModal(); else dialog.current?.close(); }, [editing]);
   useEffect(() => {
     if (!editing) return;

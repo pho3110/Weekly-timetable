@@ -26,6 +26,12 @@ Mở URL HTTPS bằng Safari khi có mạng và chờ ứng dụng tải xong, c
 
 Dữ liệu nằm trong localStorage trên thiết bị, không đồng bộ tài khoản. Xóa dữ liệu trình duyệt hoặc việc Safari thu hồi dữ liệu lưu trữ có thể xóa lịch. Safari và bản cài màn hình chính có thể dùng bộ nhớ riêng.
 
+## Cập nhật sau deploy
+
+PWA kiểm tra bản mới khi mở app, trở lại từ nền, có mạng trở lại và mỗi phút khi đang hiển thị. Khi service worker mới tải xong, app tự tải lại; nếu đang sửa ca học thì đợi lưu hoặc đóng hộp chỉnh sửa. Lịch đã lưu vẫn nằm trong localStorage.
+
+`vercel.json` đặt header chống cache cũ cho service worker và HTML. Hosting khác cần cấu hình tương đương. iOS không cho app web tự chạy cập nhật liên tục khi bị đóng hoặc tạm ngưng; việc kiểm tra tiếp tục khi mở lại và có mạng. Bản cũ cần nhận bản cập nhật cơ chế này một lần trước khi áp dụng đầy đủ.
+
 ## Cấu trúc
 
 - `src/main.jsx`: giao diện và thao tác lịch học.
