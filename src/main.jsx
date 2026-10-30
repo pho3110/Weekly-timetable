@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import { CalendarDays, Sun, Sunset, Plus, MapPin, X, Check } from 'lucide-react';
@@ -8,7 +8,6 @@ import { useDaySwipe } from './useDaySwipe';
 import { dismissStartup } from './startup';
 import { useCurrentLesson } from './useCurrentLesson';
 import { LessonMascot } from './LessonMascot';
-const FloatingCat = lazy(() => import('./FloatingCat'));
 
 function App() {
   const [schedule, setSchedule] = useState(loadSchedule);
@@ -79,7 +78,6 @@ function App() {
       <div className="dialog-header"><h2 id="lesson-dialog-title">{schedule[`${editing?.day}-${editing?.slot}`] ? 'Chỉnh sửa ca học' : 'Thêm ca học'}</h2><button className="icon-button" aria-label="Đóng" onClick={() => { setEditing(null); }}><X size={20}/></button></div>
       {editing && <form onSubmit={save}><p className="form-description">{DAYS[editing.day]} · {SLOTS[editing.slot].label} · {SLOTS[editing.slot].time}</p><div className="form-row"><label>Ngày<select value={editing.day} onChange={e => setEditing({ ...editing, day: Number(e.target.value) })}>{DAYS.map((name, d) => <option value={d} key={d}>{name}</option>)}</select></label><label>Ca học<select value={editing.slot} onChange={e => setEditing({ ...editing, slot: Number(e.target.value) })}>{SLOTS.map((slot, s) => <option value={s} key={s}>{slot.label} · {slot.time}</option>)}</select></label></div><label>Tên môn học<input autoFocus required maxLength={100} value={editing.subject} placeholder="Ví dụ: Lập trình web" onChange={e => setEditing({ ...editing, subject: e.target.value })} pattern=".*\S.*"/></label><label>Phòng học<input maxLength={60} value={editing.room} placeholder="Ví dụ: A.203" onChange={e => setEditing({ ...editing, room: e.target.value })}/></label><fieldset><legend>Màu ca học</legend><div className="color-picker">{COLORS.map((color, i) => <button type="button" key={color} aria-label={['Xanh lá', 'Xanh dương', 'Cam', 'Tím', 'Vàng'][i]} aria-pressed={editing.color === color} className={color} onClick={() => setEditing({ ...editing, color })}>{editing.color === color && <Check size={18}/>}</button>)}</div></fieldset>{schedule[`${editing.day}-${editing.slot}`] && <p className="replace-note">Lưu sẽ cập nhật môn học tại ca đang chọn.</p>}<div className="form-actions">{schedule[`${editing.day}-${editing.slot}`] && <button type="button" className="delete" onClick={remove}>Xóa ca học</button>}<button className="primary" type="submit"><Check size={17}/>Lưu ca học</button></div></form>}
     </dialog>{notice && <div className="toast" role="status">{notice}</div>}
-    <Suspense fallback={null}><FloatingCat hidden={!!editing}/></Suspense>
   </div>;
 }
 createRoot(document.getElementById('root')).render(<App/>);

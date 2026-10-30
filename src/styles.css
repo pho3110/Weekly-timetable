@@ -1,10 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
   color-scheme: light;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
   color: #1c1c1e;
@@ -243,24 +239,3 @@ form input, form select, form label, legend, .replace-note, .delete, .toast {
     transition: none;
   }
 }
-
-.floating-cat { position: fixed; width: 144px; height: 174px; z-index: 8; pointer-events: none; }
-.pet-body { position: relative; width: 144px; height: 130px; touch-action: none; cursor: grab; pointer-events: auto; border-radius: 24px; outline-offset: 2px; user-select: none; -webkit-user-select: none; }
-.pet-body:active { cursor: grabbing; }
-.pet-body:focus-visible { outline: 2px solid var(--accent); }
-.pet-body canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
-.pet-placeholder { position: absolute; inset: 0; display: grid; place-items: center; font-size: 58px; pointer-events: none; }
-.pet-controls { display: flex; justify-content: flex-end; height: 44px; pointer-events: none; }
-.pet-controls button, .pet-credit summary { width: 44px; height: 44px; border: 0; display: grid; place-items: center; color: var(--muted); background: transparent; border-radius: 50%; cursor: pointer; pointer-events: auto; }
-.pet-credit summary { list-style: none; }
-.pet-credit summary::-webkit-details-marker { display: none; }
-.pet-credit { position: relative; }
-.pet-credit p { position: absolute; bottom: 44px; right: -44px; width: min(240px, calc(100vw - 32px)); padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--ink); box-shadow: 0 5px 24px #0002; font-size: 14px; line-height: 1.6; pointer-events: auto; }
-.pet-credit a { color: #005ac2; text-decoration: underline; }
-.pet-restore { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(24px, env(safe-area-inset-bottom, 0px)); z-index: 8; display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: #005ac2; box-shadow: 0 4px 16px #0001; }
-@media (prefers-color-scheme: dark) {
- .pet-credit p, .pet-restore { background: #1c1c1e; }
- .pet-credit a, .pet-restore { color: #a6ceff; }
-}
-.pet-body canvas { border-radius: 24px; }
-.pet-credit p { position: fixed; left: 50%; right: auto; bottom: max(24px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); }

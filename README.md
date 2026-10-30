@@ -2,7 +2,7 @@
 
 React + Tailwind CSS + Vite. Thời khóa biểu cố định thứ Hai–thứ Sáu, 4 ca mỗi ngày. Thêm, sửa, xóa môn học và phòng; chọn màu. Lịch ban đầu trống để nhập môn học thực tế.
 
-Giao diện iOS, tự đổi sáng/tối theo hệ thống, vuốt để chuyển ngày. Màn mở đầu Totoro, mèo khóc tại ca đang học và mèo Rive tương tác có thể kéo, thu gọn. Các animation hỗ trợ Giảm chuyển động và được lưu cục bộ để dùng offline. Nguồn và giấy phép nằm trong `THIRD_PARTY_NOTICES.md`.
+Giao diện iOS, tự đổi sáng/tối theo hệ thống, vuốt để chuyển ngày. Màn mở đầu Totoro, mèo khóc tại ca đang học. Các animation hỗ trợ Giảm chuyển động và được lưu cục bộ để dùng offline. Nguồn và giấy phép nằm trong `THIRD_PARTY_NOTICES.md`.
 
 ## Chạy dự án
 
