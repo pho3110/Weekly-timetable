@@ -33,11 +33,16 @@ export function dismissStartup() {
     ]).then(([player, data]) => {
       if (closed) return;
       animation = player.default.loadAnimation({
-        container, renderer: 'svg', loop: false, autoplay: true,
+        container, renderer: 'svg', loop: false, autoplay: false,
         animationData: data.default,
         rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false },
       });
-      animation.addEventListener('DOMLoaded', () => splash.classList.add('has-animation'));
+      animation.addEventListener('DOMLoaded', () => {
+        if (closed) return;
+        animation.goToAndStop(0, true);
+        splash.classList.add('has-animation');
+        animation.play();
+      });
       animation.addEventListener('complete', reveal);
       animation.addEventListener('data_failed', reveal);
       animation.addEventListener('error', reveal);
