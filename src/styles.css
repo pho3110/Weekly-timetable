@@ -133,6 +133,9 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .lesson-marker { top: 18px; bottom: 18px; }
   dialog { position: fixed; inset: auto 0 0; width: 100%; max-width: min(560px, 100%); margin: 0 auto; padding: 14px max(22px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(22px, env(safe-area-inset-left, 0px)); border: 0; border-radius: 28px 28px 0 0; background: #fafafd; }
   dialog { bottom: var(--keyboard-bottom, 0px); max-height: calc(var(--sheet-available, 100dvh) - 16px - env(safe-area-inset-top, 0px)); transform: translateY(var(--sheet-offset, 0px)); }
+  dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
+  dialog > .sheet-handle, dialog > .dialog-header { flex-shrink: 0; }
+  dialog > form { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y pinch-zoom; padding: 4px 4px 8px; scroll-padding-bottom: 16px; }
   dialog[data-dragging] { transition: none; animation: none; }
   .sheet-handle { display: grid; place-items: start center; width: 100%; min-height: 44px; border: 0; padding: 4px 0 0; background: transparent; touch-action: none; }
   .sheet-handle span { width: 36px; height: 5px; border-radius: 5px; background: #9898a3; }

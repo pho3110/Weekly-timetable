@@ -24,7 +24,7 @@ function App() {
   const currentLesson = useCurrentLesson();
   const dialog = useRef(null);
   const backdropPress = useRef(false);
-  const sheetHandlers = useSheetGesture(dialog, () => setEditing(null));
+  const sheetHandlers = useSheetGesture(dialog, () => setEditing(null), !!editing);
   const mobileSchedule = useRef(null);
   const previousDay = useRef(day);
   const swipeHandlers = useDaySwipe(direction => setDay(current => Math.max(0, Math.min(DAYS.length - 1, current + direction))));
