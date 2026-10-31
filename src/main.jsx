@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import { CalendarDays, Sun, Sunset, Plus, MapPin, X, Check } from 'lucide-react';
@@ -10,6 +10,7 @@ import { useCurrentLesson } from './useCurrentLesson';
 import { LessonMascot } from './LessonMascot';
 import { useSheetGesture } from './useSheetGesture';
 import { usePwaUpdates } from './usePwaUpdates';
+import { DayPager } from './DayPager';
 
 function outsideDialog(event) {
   const rect = event.currentTarget.getBoundingClientRect();
@@ -26,25 +27,8 @@ function App() {
   const dialog = useRef(null);
   const backdropPress = useRef(false);
   const { requestClose: closeEditor, ...sheetHandlers } = useSheetGesture(dialog, () => setEditing(null), !!editing);
-  const mobileSchedule = useRef(null);
-  const previousDay = useRef(day);
   const swipeHandlers = useDaySwipe(direction => setDay(current => Math.max(0, Math.min(DAYS.length - 1, current + direction))));
   useEffect(dismissStartup, []);
-  useLayoutEffect(() => {
-    const direction = Math.sign(day - previousDay.current);
-    previousDay.current = day;
-    const element = mobileSchedule.current;
-    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!direction || !element?.getClientRects().length || motion.matches) return;
-    // Animate the existing panel so rapid swipes do not reset touch tracking.
-    const animation = element.animate([
-      { opacity: 0.6, transform: `translateX(${direction * 12}px)` },
-      { opacity: 1, transform: 'translateX(0)' },
-    ], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
-    const stopForReducedMotion = () => { if (motion.matches) animation.cancel(); };
-    motion.addEventListener('change', stopForReducedMotion);
-    return () => { animation.cancel(); motion.removeEventListener('change', stopForReducedMotion); };
-  }, [day]);
   useEffect(() => {
     if (editing) {
       if (!dialog.current?.open) dialog.current?.showModal();
@@ -96,11 +80,11 @@ function App() {
     if (persist({ ...schedule, [key]: { subject: editing.subject.trim(), room: editing.room.trim(), color: editing.color } })) { closeEditor(); setNotice('Đã lưu ca học trên thiết bị.'); }
   }
   function remove() { const next = { ...schedule }; delete next[`${editing.day}-${editing.slot}`]; if (persist(next)) closeEditor(); }
-  function cell(d, s) {
+  function cell(d, s, preview = false) {
     const item = schedule[`${d}-${s}`];
     const active = !!item && currentLesson === `${d}-${s}`;
     return <button key={`${d}-${s}`} className={`lesson ${item ? item.color : 'empty'}${active ? ' is-current' : ''}`} aria-current={active ? 'time' : undefined} onClick={() => edit(d, s)} aria-label={`${DAYS[d]}, ${SLOTS[s].label}: ${item ? `${item.subject}, phòng ${item.room || 'chưa đặt'}. Chỉnh sửa${active ? '. Đang học' : ''}` : 'Thêm môn học'}`}>
-      {active && <LessonMascot/>}
+      {active && !preview && <LessonMascot/>}
       {item ? <><span className="lesson-marker"/><span className="lesson-name">{item.subject}</span><span className="room"><MapPin size={14}/><span>{item.room || 'Chưa có phòng'}</span></span></> : <><span className="add-icon"><Plus size={18}/></span><span>Thêm môn học</span></>}
     </button>;
   }
@@ -111,7 +95,7 @@ function App() {
       <div className="day-tabs" aria-label="Chọn ngày">{DAYS.map((name, d) => <button key={name} aria-pressed={day === d} className={day === d ? 'selected' : ''} onClick={() => setDay(d)}>{name}<span className={`day-dot ${SLOTS.some((_, s) => schedule[`${d}-${s}`]) ? 'has-lessons' : ''}`} aria-hidden="true"/></button>)}</div>
       <div className="desktop-grid"><div className="grid-heading time-heading">CA HỌC</div>{DAYS.map((name, d) => <div key={name} className={`grid-heading ${d === (new Date().getDay() + 6) % 7 ? 'today' : ''}`}>{name}{d === (new Date().getDay() + 6) % 7 && <span>Hôm nay</span>}</div>)}
       {SLOTS.map((slot, s) => <React.Fragment key={s}><div className={`time-cell ${s === 2 ? 'afternoon' : ''}`}><span className="period">{slot.period}</span><strong>{slot.label}</strong><span>{slot.time}</span></div>{DAYS.map((_, d) => <div className={`grid-cell ${s === 2 ? 'afternoon' : ''}`} key={d}>{cell(d, s)}</div>)}</React.Fragment>)}</div>
-      <div className="mobile-schedule" ref={mobileSchedule} {...swipeHandlers}>{SLOTS.map((slot, s) => <div className="mobile-slot" key={s}><div className="mobile-time"><span className={`slot-symbol ${s < 2 ? 'morning' : 'afternoon-symbol'}`}>{s < 2 ? <Sun size={17}/> : <Sunset size={17}/>}</span><strong>{slot.label}<span>{slot.period}</span></strong><span className="time-badge">{slot.time}</span></div>{cell(day, s)}</div>)}</div>
+      <DayPager day={day} {...swipeHandlers}>{(pageDay, preview) => SLOTS.map((slot, s) => <div className="mobile-slot" key={s}><div className="mobile-time"><span className={`slot-symbol ${s < 2 ? 'morning' : 'afternoon-symbol'}`}>{s < 2 ? <Sun size={17}/> : <Sunset size={17}/>}</span><strong>{slot.label}<span>{slot.period}</span></strong><span className="time-badge">{slot.time}</span></div>{cell(pageDay, s, preview)}</div>)}</DayPager>
       </section>
     </main>
     <dialog ref={dialog} aria-labelledby="lesson-dialog-title" onCancel={event => { event.preventDefault(); closeEditor(); }} onPointerDown={event => { backdropPress.current = event.target === event.currentTarget && outsideDialog(event); }} onClick={event => { if (event.target === event.currentTarget && backdropPress.current && outsideDialog(event)) closeEditor(); backdropPress.current = false; }}>

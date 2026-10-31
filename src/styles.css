@@ -70,7 +70,7 @@ h2 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.6px; }
 .lesson.empty:hover { background: #edf3ff; border-color: #0062cc; }
 .empty > span:last-child { font-size: 14px; }
 .add-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #e7efff; color: #005ac2; flex-shrink: 0; }
-.day-tabs, .mobile-schedule { display: none; }
+.day-tabs, .day-pager, .mobile-schedule { display: none; }
 .icon-button { display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 0; border-radius: 12px; color: var(--muted); background: #eeeef2; }
 .sheet-handle { display: none; }
 dialog { width: min(460px, calc(100% - 24px)); max-width: calc(100% - 24px); margin: auto; border: 1px solid var(--line); border-radius: 24px; padding: 26px; background: #fff; color: var(--ink); max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; box-shadow: 0 24px 80px #12172824; }
@@ -113,7 +113,10 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .day-dot.has-lessons { background: currentColor; }
   .selected .day-dot { background: var(--accent); }
   .desktop-grid { display: none; }
-  .mobile-schedule { display: grid; gap: 14px; margin-top: 20px; touch-action: pan-y pinch-zoom; }
+  .day-pager { display: block; position: relative; overflow: hidden; margin: 20px -2px 0; padding: 2px; touch-action: pan-y pinch-zoom; overflow-anchor: none; }
+  .day-page { min-width: 0; }
+  .day-page.outgoing { position: absolute; top: 2px; left: 2px; right: 2px; pointer-events: none; }
+  .mobile-schedule { display: grid; gap: 14px; }
   .mobile-slot { min-width: 0; background: #fff; border: 1px solid #ffffff; border-radius: 20px; padding: 14px; box-shadow: 0 2px 6px #1c1c1e04, 0 0 0 1px #1c1c1e03; }
   .mobile-time { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; margin-bottom: 12px; min-width: 0; }
   .slot-symbol { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0; }
@@ -150,7 +153,8 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .section-toolbar { padding-bottom: 12px; }
   .day-tabs { padding: 4px; }
   .day-tabs button { min-height: 50px; gap: 5px; }
-  .mobile-schedule { gap: 10px; margin-top: 14px; }
+  .day-pager { margin-top: 14px; }
+  .mobile-schedule { gap: 10px; }
   .mobile-slot { padding: 12px; border-radius: 20px; }
   .mobile-time { gap: 8px; margin-bottom: 8px; }
   .slot-symbol { width: 32px; height: 32px; }
