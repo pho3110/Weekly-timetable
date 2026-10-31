@@ -39,4 +39,6 @@ PWA kiểm tra bản mới khi mở app, trở lại từ nền, có mạng tr�
 - `src/styles.css`: Tailwind và giao diện responsive.
 - `vite.config.js`: React, Tailwind và PWA precache tài nguyên.
 
-Ca học: 07:00–09:25, 09:35–12:00, 13:00–15:25, 15:35–18:00. Một môn trong mỗi ca. Lịch lặp lại theo tuần, không gắn ngày tháng.
+Ca học: 07:00–09:25, 09:35–12:00, 13:00–15:25, 15:35–18:00. Một môn trong mỗi ca. Tuần tính từ thứ Hai đến Chủ nhật; các ca học hiển thị thứ Hai–thứ Sáu, kèm ngày cụ thể.
+
+Lịch cũ được giữ làm lịch lặp mặc định cho các tuần. Khi thêm ca mới, mặc định “Lặp mỗi tuần”; khi sửa ca đã có, mặc định “Chỉ tuần này”. Có thể đổi phạm vi trong ô “Áp dụng”. Thay đổi riêng tuần khác được giữ nguyên khi cập nhật lịch lặp. Dữ liệu mới lưu trong `lich-hoc-weekly-v2`; dữ liệu `lich-hoc-v1` cũ được đọc khi chuyển đổi lần đầu.

@@ -35,6 +35,12 @@ svg { flex-shrink: 0; }
 main { max-width: 1208px; margin: auto; padding: 32px max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-right, 0px)); }
 .schedule-section { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding-bottom: 14px; box-shadow: 0 8px 36px #1c1c1e05; overflow: hidden; }
 .section-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 26px 24px; }
+.week-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 24px 18px; padding: 8px; border: 1px solid var(--line); border-radius: 17px; background: #f7f7fa; }
+.week-range { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 3px; min-width: 0; min-height: 48px; padding: 0; border: 0; background: transparent; color: var(--ink); }
+.week-range strong { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.week-range span, .grid-date { font-size: 14px; font-weight: 400; color: var(--muted); }
+.grid-heading:not(.time-heading) { flex-direction: column; gap: 4px; padding: 10px 0; }
+.day-tabs .day-date { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
 h2 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.6px; }
 .primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; color: var(--muted); background: #fff; }
 .primary { color: #fff; background: var(--accent); border-color: var(--accent); box-shadow: 0 4px 10px #0062cc15; }
@@ -105,6 +111,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   main { padding-top: 20px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .schedule-section { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; overflow: visible; }
   .section-toolbar { padding: 0 0 18px; }
+  .week-navigation { margin: 0 0 14px; }
   .section-toolbar h2 { font-size: 24px; letter-spacing: -.9px; font-weight: 750; }
   .day-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 5px; background: #e8e8ed; border: 1px solid #dedee6; border-radius: 17px; }
   .day-tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; min-height: 57px; min-width: 0; padding: 8px 0; border: 0; border-radius: 12px; background: transparent; color: #525460; font-size: 14px; white-space: nowrap; }
@@ -152,7 +159,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   main { padding-top: 12px; }
   .section-toolbar { padding-bottom: 12px; }
   .day-tabs { padding: 4px; }
-  .day-tabs button { min-height: 50px; gap: 5px; }
+  .day-tabs button { min-height: 66px; gap: 4px; }
   .day-pager { margin-top: 14px; }
   .mobile-schedule { gap: 10px; }
   .mobile-slot { padding: 12px; border-radius: 20px; }
@@ -186,6 +193,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .topbar { background: #141416e8; border-color: #303036; }
   .brand-icon { background: linear-gradient(155deg, #2785f2, #0056c6); }
   .schedule-section { background: #1c1c1e; }
+  .week-navigation { background: #1c1c1e; }
   .icon-button { background: #2c2c30; color: var(--muted); }
   .primary { background: #83baff; color: #081e38; border-color: #83baff; }
   .primary:hover { background: #a1cbff; }
@@ -223,7 +231,7 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 }
 
 /* Use the same timing across surfaces and text when system appearance changes. */
-:root, body, .topbar, .schedule-section, .brand, .grid-heading,
+:root, body, .topbar, .schedule-section, .week-navigation, .week-range, .brand, .grid-heading,
 .time-cell, .period, .time-cell > span, .grid-cell, .lesson,
 .lesson-name, .room, .add-icon, .day-tabs, .day-dot, .mobile-slot,
 .slot-symbol, .mobile-time strong span, .time-badge,
@@ -232,7 +240,7 @@ form input, form select, form label, legend, .replace-note, .delete, .toast {
   transition: background-color .22s ease, color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .18s ease;
 }
 @media (prefers-reduced-motion: reduce) {
-  :root, body, .topbar, .schedule-section, .brand, .grid-heading,
+  :root, body, .topbar, .schedule-section, .week-navigation, .week-range, .brand, .grid-heading,
   .time-cell, .period, .time-cell > span, .grid-cell, .lesson,
   .lesson-name, .room, .add-icon, .day-tabs, .day-dot, .mobile-slot,
   .slot-symbol, .mobile-time strong span, .time-badge,
