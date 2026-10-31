@@ -140,6 +140,8 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   .sheet-handle { display: grid; place-items: start center; width: 100%; min-height: 44px; border: 0; padding: 4px 0 0; background: transparent; touch-action: none; }
   .sheet-handle span { width: 36px; height: 5px; border-radius: 5px; background: #9898a3; }
   dialog[open] { animation: sheet-in .24s cubic-bezier(.2,.8,.2,1); }
+  /* Do not move a focused text field while iOS is opening its keyboard. */
+  dialog:has(input:focus) { animation: none; transform: none; }
   .dialog-header .icon-button { border-radius: 50%; background: #e8e8ee; }
   .form-actions .primary { flex: 1; border-radius: 14px; min-height: 50px; font-size: 16px; font-weight: 600; }
   .dialog-header h2 { font-size: 20px; }

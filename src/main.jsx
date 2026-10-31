@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import { CalendarDays, Sun, Sunset, Plus, MapPin, X, Check } from 'lucide-react';
 import { COLORS, DAYS, SLOTS, STORAGE_KEY, loadSchedule } from './storage';
 import './styles.css';
@@ -53,10 +54,8 @@ function App() {
   }, [editing]);
   useEffect(() => {
     if (!editing) return;
-    // Avoid body { position: fixed } because it causes iOS PWA (WKWebView) to
-    // refuse opening the virtual keyboard when tapping an input inside the sheet.
-    // Instead, lock scrolling via overflow: hidden on both root elements which
-    // is sufficient to prevent background scroll without breaking keyboard focus.
+    // Keep the body in normal layout while the editor is open; this avoids
+    // fixed-body layout changes as iOS brings up the keyboard.
     const htmlEl = document.documentElement;
     const bodyEl = document.body;
     const prev = { htmlOverflow: htmlEl.style.overflow, bodyOverflow: bodyEl.style.overflow };
@@ -86,7 +85,11 @@ function App() {
     catch { setNotice('Không thể lưu. Bộ nhớ thiết bị có thể đã đầy hoặc bị chặn.'); return false; }
   }
   function edit(d, s) {
-    setEditing({ day: d, slot: s, subject: '', room: '', color: COLORS[d], ...schedule[`${d}-${s}`] });
+    // Mount and focus within the original tap, preserving iOS user activation.
+    flushSync(() => setEditing({ day: d, slot: s, subject: '', room: '', color: COLORS[d], ...schedule[`${d}-${s}`] }));
+    const element = dialog.current;
+    if (!element.open) element.showModal();
+    element.querySelector('input[name="subject"]')?.focus({ preventScroll: true });
   }
   function save(event) {
     event.preventDefault(); const key = `${editing.day}-${editing.slot}`;
@@ -114,7 +117,7 @@ function App() {
     <dialog ref={dialog} aria-labelledby="lesson-dialog-title" onCancel={() => { setEditing(null); }} onPointerDown={event => { backdropPress.current = event.target === event.currentTarget && outsideDialog(event); }} onClick={event => { if (event.target === event.currentTarget && backdropPress.current && outsideDialog(event)) setEditing(null); backdropPress.current = false; }}>
       <button type="button" className="sheet-handle" aria-label="Đóng chỉnh sửa ca học" {...sheetHandlers}><span/></button>
       <div className="dialog-header"><h2 id="lesson-dialog-title">{schedule[`${editing?.day}-${editing?.slot}`] ? 'Chỉnh sửa ca học' : 'Thêm ca học'}</h2><button className="icon-button" aria-label="Đóng" onClick={() => { setEditing(null); }}><X size={20}/></button></div>
-      {editing && <form onSubmit={save}><p className="form-description">{DAYS[editing.day]} · {SLOTS[editing.slot].label} · {SLOTS[editing.slot].time}</p><div className="form-row"><label>Ngày<select value={editing.day} onChange={e => setEditing({ ...editing, day: Number(e.target.value) })}>{DAYS.map((name, d) => <option value={d} key={d}>{name}</option>)}</select></label><label>Ca học<select value={editing.slot} onChange={e => setEditing({ ...editing, slot: Number(e.target.value) })}>{SLOTS.map((slot, s) => <option value={s} key={s}>{slot.label} · {slot.time}</option>)}</select></label></div><label>Tên môn học<input name="subject" autoFocus={typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches} enterKeyHint="next" onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.form.elements.room.focus(); } }} required maxLength={100} value={editing.subject} placeholder="Ví dụ: Lập trình web" onChange={e => setEditing({ ...editing, subject: e.target.value })} pattern=".*\S.*"/></label><label>Phòng học<input name="room" enterKeyHint="done" autoComplete="off" autoCapitalize="off" spellCheck={false} maxLength={60} value={editing.room} placeholder="Ví dụ: A.203" onChange={e => setEditing({ ...editing, room: e.target.value })}/></label><fieldset><legend>Màu ca học</legend><div className="color-picker">{COLORS.map((color, i) => <button type="button" key={color} aria-label={['Xanh lá', 'Xanh dương', 'Cam', 'Tím', 'Vàng'][i]} aria-pressed={editing.color === color} className={color} onClick={() => setEditing({ ...editing, color })}>{editing.color === color && <Check size={18}/>}</button>)}</div></fieldset>{schedule[`${editing.day}-${editing.slot}`] && <p className="replace-note">Lưu sẽ cập nhật môn học tại ca đang chọn.</p>}<div className="form-actions">{schedule[`${editing.day}-${editing.slot}`] && <button type="button" className="delete" onClick={remove}>Xóa ca học</button>}<button className="primary" type="submit"><Check size={17}/>Lưu ca học</button></div></form>}
+      {editing && <form onSubmit={save}><p className="form-description">{DAYS[editing.day]} · {SLOTS[editing.slot].label} · {SLOTS[editing.slot].time}</p><div className="form-row"><label>Ngày<select value={editing.day} onChange={e => setEditing({ ...editing, day: Number(e.target.value) })}>{DAYS.map((name, d) => <option value={d} key={d}>{name}</option>)}</select></label><label>Ca học<select value={editing.slot} onChange={e => setEditing({ ...editing, slot: Number(e.target.value) })}>{SLOTS.map((slot, s) => <option value={s} key={s}>{slot.label} · {slot.time}</option>)}</select></label></div><label>Tên môn học<input name="subject" inputMode="text" enterKeyHint="next" onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.form.elements.room.focus(); } }} required maxLength={100} value={editing.subject} placeholder="Ví dụ: Lập trình web" onChange={e => setEditing({ ...editing, subject: e.target.value })} pattern=".*\S.*"/></label><label>Phòng học<input name="room" inputMode="text" enterKeyHint="done" autoComplete="off" autoCapitalize="off" spellCheck={false} maxLength={60} value={editing.room} placeholder="Ví dụ: A.203" onChange={e => setEditing({ ...editing, room: e.target.value })}/></label><fieldset><legend>Màu ca học</legend><div className="color-picker">{COLORS.map((color, i) => <button type="button" key={color} aria-label={['Xanh lá', 'Xanh dương', 'Cam', 'Tím', 'Vàng'][i]} aria-pressed={editing.color === color} className={color} onClick={() => setEditing({ ...editing, color })}>{editing.color === color && <Check size={18}/>}</button>)}</div></fieldset>{schedule[`${editing.day}-${editing.slot}`] && <p className="replace-note">Lưu sẽ cập nhật môn học tại ca đang chọn.</p>}<div className="form-actions">{schedule[`${editing.day}-${editing.slot}`] && <button type="button" className="delete" onClick={remove}>Xóa ca học</button>}<button className="primary" type="submit"><Check size={17}/>Lưu ca học</button></div></form>}
     </dialog>{notice && <div className="toast" role="status">{notice}</div>}
   </div>;
 }
