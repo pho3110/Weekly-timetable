@@ -25,7 +25,7 @@ function App() {
   const currentLesson = useCurrentLesson();
   const dialog = useRef(null);
   const backdropPress = useRef(false);
-  const sheetHandlers = useSheetGesture(dialog, () => setEditing(null), !!editing);
+  const { requestClose: closeEditor, ...sheetHandlers } = useSheetGesture(dialog, () => setEditing(null), !!editing);
   const mobileSchedule = useRef(null);
   const previousDay = useRef(day);
   const swipeHandlers = useDaySwipe(direction => setDay(current => Math.max(0, Math.min(DAYS.length - 1, current + direction))));
@@ -93,9 +93,9 @@ function App() {
   }
   function save(event) {
     event.preventDefault(); const key = `${editing.day}-${editing.slot}`;
-    if (persist({ ...schedule, [key]: { subject: editing.subject.trim(), room: editing.room.trim(), color: editing.color } })) { setEditing(null); setNotice('Đã lưu ca học trên thiết bị.'); }
+    if (persist({ ...schedule, [key]: { subject: editing.subject.trim(), room: editing.room.trim(), color: editing.color } })) { closeEditor(); setNotice('Đã lưu ca học trên thiết bị.'); }
   }
-  function remove() { const next = { ...schedule }; delete next[`${editing.day}-${editing.slot}`]; if (persist(next)) setEditing(null); }
+  function remove() { const next = { ...schedule }; delete next[`${editing.day}-${editing.slot}`]; if (persist(next)) closeEditor(); }
   function cell(d, s) {
     const item = schedule[`${d}-${s}`];
     const active = !!item && currentLesson === `${d}-${s}`;
@@ -114,9 +114,9 @@ function App() {
       <div className="mobile-schedule" ref={mobileSchedule} {...swipeHandlers}>{SLOTS.map((slot, s) => <div className="mobile-slot" key={s}><div className="mobile-time"><span className={`slot-symbol ${s < 2 ? 'morning' : 'afternoon-symbol'}`}>{s < 2 ? <Sun size={17}/> : <Sunset size={17}/>}</span><strong>{slot.label}<span>{slot.period}</span></strong><span className="time-badge">{slot.time}</span></div>{cell(day, s)}</div>)}</div>
       </section>
     </main>
-    <dialog ref={dialog} aria-labelledby="lesson-dialog-title" onCancel={() => { setEditing(null); }} onPointerDown={event => { backdropPress.current = event.target === event.currentTarget && outsideDialog(event); }} onClick={event => { if (event.target === event.currentTarget && backdropPress.current && outsideDialog(event)) setEditing(null); backdropPress.current = false; }}>
+    <dialog ref={dialog} aria-labelledby="lesson-dialog-title" onCancel={event => { event.preventDefault(); closeEditor(); }} onPointerDown={event => { backdropPress.current = event.target === event.currentTarget && outsideDialog(event); }} onClick={event => { if (event.target === event.currentTarget && backdropPress.current && outsideDialog(event)) closeEditor(); backdropPress.current = false; }}>
       <button type="button" className="sheet-handle" aria-label="Đóng chỉnh sửa ca học" {...sheetHandlers}><span/></button>
-      <div className="dialog-header"><h2 id="lesson-dialog-title">{schedule[`${editing?.day}-${editing?.slot}`] ? 'Chỉnh sửa ca học' : 'Thêm ca học'}</h2><button className="icon-button" aria-label="Đóng" onClick={() => { setEditing(null); }}><X size={20}/></button></div>
+      <div className="dialog-header"><h2 id="lesson-dialog-title">{schedule[`${editing?.day}-${editing?.slot}`] ? 'Chỉnh sửa ca học' : 'Thêm ca học'}</h2><button className="icon-button" aria-label="Đóng" onClick={closeEditor}><X size={20}/></button></div>
       {editing && <form onSubmit={save}><p className="form-description">{DAYS[editing.day]} · {SLOTS[editing.slot].label} · {SLOTS[editing.slot].time}</p><div className="form-row"><label>Ngày<select value={editing.day} onChange={e => setEditing({ ...editing, day: Number(e.target.value) })}>{DAYS.map((name, d) => <option value={d} key={d}>{name}</option>)}</select></label><label>Ca học<select value={editing.slot} onChange={e => setEditing({ ...editing, slot: Number(e.target.value) })}>{SLOTS.map((slot, s) => <option value={s} key={s}>{slot.label} · {slot.time}</option>)}</select></label></div><label>Tên môn học<input name="subject" inputMode="text" enterKeyHint="next" onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.form.elements.room.focus(); } }} required maxLength={100} value={editing.subject} placeholder="Ví dụ: Lập trình web" onChange={e => setEditing({ ...editing, subject: e.target.value })} pattern=".*\S.*"/></label><label>Phòng học<input name="room" inputMode="text" enterKeyHint="done" autoComplete="off" autoCapitalize="off" spellCheck={false} maxLength={60} value={editing.room} placeholder="Ví dụ: A.203" onChange={e => setEditing({ ...editing, room: e.target.value })}/></label><fieldset><legend>Màu ca học</legend><div className="color-picker">{COLORS.map((color, i) => <button type="button" key={color} aria-label={['Xanh lá', 'Xanh dương', 'Cam', 'Tím', 'Vàng'][i]} aria-pressed={editing.color === color} className={color} onClick={() => setEditing({ ...editing, color })}>{editing.color === color && <Check size={18}/>}</button>)}</div></fieldset>{schedule[`${editing.day}-${editing.slot}`] && <p className="replace-note">Lưu sẽ cập nhật môn học tại ca đang chọn.</p>}<div className="form-actions">{schedule[`${editing.day}-${editing.slot}`] && <button type="button" className="delete" onClick={remove}>Xóa ca học</button>}<button className="primary" type="submit"><Check size={17}/>Lưu ca học</button></div></form>}
     </dialog>{notice && <div className="toast" role="status">{notice}</div>}
   </div>;

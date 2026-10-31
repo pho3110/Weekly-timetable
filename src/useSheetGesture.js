@@ -25,14 +25,16 @@ export function useSheetGesture(dialog, onClose, isOpen) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { onClose(); return; }
     const offset = parseFloat(element.style.getPropertyValue('--sheet-offset')) || 0;
     const destination = window.innerHeight - element.getBoundingClientRect().top + offset + 16;
-    const animation = element.animate([
+    const mobile = window.matchMedia('(max-width: 800px), (max-height: 500px) and (pointer: coarse)').matches;
+    const animation = element.animate(mobile ? [
       { transform: `translateY(${offset}px)` },
       { transform: `translateY(${destination}px)` },
-    ], { duration: 220, easing: 'cubic-bezier(.3,0,.8,.2)', fill: 'forwards' });
+    ] : [{ opacity: 1 }, { opacity: 0 }], { duration: mobile ? 220 : 160, easing: 'cubic-bezier(.3,0,.8,.2)', fill: 'forwards' });
     closing.current = animation;
     animation.finished.then(onClose).catch(() => {});
   }
   return {
+    requestClose: close,
     onPointerDown(event) {
       if (!event.isPrimary || event.button !== 0 || closing.current) return;
       // Dismiss the keyboard before dragging the sheet toward the home edge.

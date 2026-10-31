@@ -139,9 +139,8 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
   dialog[data-dragging] { transition: none; animation: none; }
   .sheet-handle { display: grid; place-items: start center; width: 100%; min-height: 44px; border: 0; padding: 4px 0 0; background: transparent; touch-action: none; }
   .sheet-handle span { width: 36px; height: 5px; border-radius: 5px; background: #9898a3; }
-  dialog[open] { animation: sheet-in .24s cubic-bezier(.2,.8,.2,1); }
-  /* Do not move a focused text field while iOS is opening its keyboard. */
-  dialog:has(input:focus) { animation: none; transform: none; }
+  /* Fade content once per opening without moving focused iOS input fields. */
+  dialog[open] > .dialog-header, dialog[open] > form { animation: sheet-content-in .16s ease; }
   .dialog-header .icon-button { border-radius: 50%; background: #e8e8ee; }
   .form-actions .primary { flex: 1; border-radius: 14px; min-height: 50px; font-size: 16px; font-weight: 600; }
   .dialog-header h2 { font-size: 20px; }
@@ -182,9 +181,9 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
 @media (prefers-reduced-motion: reduce) {
   button, a { transition: none; }
   button:active:not(:disabled) { transform: none; }
-  dialog[open] { animation: none; }
+  dialog[open] > .dialog-header, dialog[open] > form { animation: none; }
 }
-@keyframes sheet-in { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sheet-content-in { from { opacity: .6; } to { opacity: 1; } }
 
 /* Follow iOS appearance automatically, including changes while the app is open. */
 @media (prefers-color-scheme: dark) {
