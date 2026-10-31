@@ -107,7 +107,7 @@ function App() {
   return <div className="app-shell">
     <header className="topbar"><a href="./" className="brand"><span className="brand-icon"><CalendarDays size={21}/></span>Lịch học</a></header>
     <main>
-      <section className="schedule-section"><div className="section-toolbar"><div><h2>Thời khóa biểu</h2></div><div className="tools"><button className="primary" aria-label="Thêm ca học" onClick={() => edit(day, SLOTS.findIndex((_, s) => !schedule[`${day}-${s}`]) < 0 ? 0 : SLOTS.findIndex((_, s) => !schedule[`${day}-${s}`]))}><Plus size={17}/><span>Thêm ca học</span></button></div></div>
+      <section className="schedule-section"><div className="section-toolbar"><h2>Thời khóa biểu</h2></div>
       <div className="day-tabs" aria-label="Chọn ngày">{DAYS.map((name, d) => <button key={name} aria-pressed={day === d} className={day === d ? 'selected' : ''} onClick={() => setDay(d)}>{name}<span className={`day-dot ${SLOTS.some((_, s) => schedule[`${d}-${s}`]) ? 'has-lessons' : ''}`} aria-hidden="true"/></button>)}</div>
       <div className="desktop-grid"><div className="grid-heading time-heading">CA HỌC</div>{DAYS.map((name, d) => <div key={name} className={`grid-heading ${d === (new Date().getDay() + 6) % 7 ? 'today' : ''}`}>{name}{d === (new Date().getDay() + 6) % 7 && <span>Hôm nay</span>}</div>)}
       {SLOTS.map((slot, s) => <React.Fragment key={s}><div className={`time-cell ${s === 2 ? 'afternoon' : ''}`}><span className="period">{slot.period}</span><strong>{slot.label}</strong><span>{slot.time}</span></div>{DAYS.map((_, d) => <div className={`grid-cell ${s === 2 ? 'afternoon' : ''}`} key={d}>{cell(d, s)}</div>)}</React.Fragment>)}</div>
